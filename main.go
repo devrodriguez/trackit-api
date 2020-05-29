@@ -1,18 +1,50 @@
 package main
 
 import (
-	"net/http"
+	"io"
+	"os"
 
-	"github.com/devrodriguez/first-class-api-go/routes"
-	"github.com/gorilla/mux"
+	"github.com/devrodriguez/first-class-api-go/controllers"
+	"github.com/devrodriguez/first-class-api-go/middlewares"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	port := ":3001"
-	router := mux.NewRouter()
 
-	router.HandleFunc("/checks", routes.GetChecks).Methods(http.MethodGet)
-	router.HandleFunc("/checks", routes.CreateCheck).Methods(http.MethodPost)
+	setupLogOutput()
+	port := os.Getenv("PORT")
+	server := gin.New()
 
-	http.ListenAndServe(port, router)
+	gin.ForceConsoleColor()
+
+	// Add middlewares
+	server.Use(gin.Recovery(), middlewares.Logger())
+
+	// Group api routes
+	apiRoutes := server.Group("/api")
+	{
+		apiRoutes.GET("/signin", controllers.SignIn)
+	}
+
+	authGroup := server.Group("/api/auth")
+	authGroup.Use(middlewares.ValidateAuth())
+	{
+		authGroup.GET("/companies", controllers.GetCompanies)
+		authGroup.GET("/checks", controllers.GetChecks)
+		authGroup.POST("/checks", controllers.CreateCheck)
+		authGroup.PUT("/checks", controllers.UpdateCheck)
+		authGroup.GET("/login", controllers.Login)
+	}
+
+	if port == "" {
+		port = "3001"
+	}
+
+	// Run server
+	server.Run(":" + port)
+}
+
+func setupLogOutput() {
+	f, _ := os.Create("gin.log")
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 }
