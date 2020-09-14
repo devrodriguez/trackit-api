@@ -1,6 +1,8 @@
 package entity
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Company struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Name string             `bsdon:"name" json:"name"`
 }

@@ -38,7 +38,8 @@ func New(client *mongo.Client) *gin.Engine {
 	authGroup := server.Group("/api")
 	authGroup.Use(middlewares.ValidateAuth())
 	{
-		authGroup.GET("/companies", compHand.Get)
+		authGroup.GET("/companies", compHand.GetAll)
+		authGroup.POST("/companies", compHand.Create)
 		authGroup.GET("/checks", chkHand.GetChecks)
 		authGroup.POST("/checks", chkHand.Create)
 		authGroup.PUT("/checks/:id", chkHand.Update)
