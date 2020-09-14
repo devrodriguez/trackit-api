@@ -6,14 +6,15 @@ import (
 	"net/http"
 
 	"github.com/devrodriguez/first-class-api-go/models"
+	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/iterator"
 )
 
 func GetCompanies(gCtx *gin.Context) {
 	var resModel models.Response
-	var company models.Company
-	var companies []models.Company
+	var company entity.Company
+	var companies []entity.Company
 	ctx := context.Background()
 	client, err := getFirestoreClient(gCtx)
 

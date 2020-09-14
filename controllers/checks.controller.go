@@ -12,14 +12,15 @@ import (
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"github.com/devrodriguez/first-class-api-go/models"
+	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
 func GetChecks(gCtx *gin.Context) {
 	var resModel models.Response
-	var checks []models.Check
-	var check models.Check
+	var checks []entity.Check
+	var check entity.Check
 
 	ctx := context.Background()
 
@@ -73,7 +74,7 @@ func GetChecks(gCtx *gin.Context) {
 
 func CreateCheck(gCtx *gin.Context) {
 	var resModel models.Response
-	var check models.Check
+	var check entity.Check
 	ctx := context.Background()
 
 	// Get data from request

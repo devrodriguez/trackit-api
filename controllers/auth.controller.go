@@ -15,9 +15,11 @@ func SignIn(gCtx *gin.Context) {
 	var resModel models.Response
 
 	// == VALIDATE USER AND PASSWORD ==
-	data, _ := getBodyData(gCtx)
+	// data, _ := getBodyData(gCtx)
+	user := gCtx.Query("user")
+	password := gCtx.Query("password")
 
-	if !ValidateUserAuth(data) {
+	if !ValidateUserAuth(user, password) {
 		resModel.Message = "Wrong user or password"
 
 		gCtx.JSON(http.StatusOK, resModel)
@@ -68,7 +70,7 @@ func CreateToken(r *http.Request) (string, error) {
 			Issuer:         "devrodriguez",
 			Subject:        "dev",
 			Audience:       jwt.Audience{"http://localhost:3000"},
-			ExpirationTime: jwt.NumericDate(now.Add(30 * time.Second)),
+			ExpirationTime: jwt.NumericDate(now.Add(300 * time.Second)),
 			NotBefore:      jwt.NumericDate(now),
 			IssuedAt:       jwt.NumericDate(now),
 			JWTID:          "foobar",
@@ -108,9 +110,9 @@ func VerifyToken(r *http.Request) error {
 	return nil
 }
 
-func ValidateUserAuth(data map[string]string) bool {
-	log.Println(data)
-	if data["user"] == "john" && data["password"] == "12345" {
+func ValidateUserAuth(user, password string) bool {
+	log.Println(user, password)
+	if user == "john" && password == "12345" {
 		return true
 	}
 
