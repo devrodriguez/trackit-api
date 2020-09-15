@@ -1,63 +1,80 @@
-package controllers
+package rest
 
 import (
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/devrodriguez/first-class-api-go/models"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/gin-gonic/gin"
 )
 
-// SignIn retorna un token de autenticacion
-func SignIn(gCtx *gin.Context) {
-	var resModel models.Response
+type authHandler struct{}
+
+func NewAuthHandler() *authHandler {
+	return &authHandler{}
+}
+
+func (ah *authHandler) SignIn(c *gin.Context) {
+	var resModel APIResponse
 
 	// == VALIDATE USER AND PASSWORD ==
 	// data, _ := getBodyData(gCtx)
-	user := gCtx.Query("user")
-	password := gCtx.Query("password")
+	user := c.Query("user")
+	password := c.Query("password")
 
-	if !ValidateUserAuth(user, password) {
+	if !validateUserAuth(user, password) {
 		resModel.Message = "Wrong user or password"
 
-		gCtx.JSON(http.StatusOK, resModel)
+		c.JSON(http.StatusOK, resModel)
 		return
 	}
 
 	// == CREATE JWT TOKEN ==
-	token, err := CreateToken(gCtx.Request)
+	token, err := CreateToken(c.Request)
 
 	log.Println(string(token))
 
 	if err != nil {
 		resModel.Message = "Autenticacion fallida"
-		resModel.Error = err.Error()
+		resModel.Errors = []APIError{
+			{
+				Status:      http.StatusUnauthorized,
+				Title:       http.StatusText(http.StatusUnauthorized),
+				Description: err.Error(),
+			},
+		}
 
-		gCtx.JSON(http.StatusOK, resModel)
+		c.JSON(http.StatusOK, resModel)
 		return
 	}
 
 	resModel.Data = gin.H{"token": string(token)}
-	gCtx.JSON(http.StatusOK, resModel)
+	c.JSON(http.StatusOK, resModel)
 }
 
 // Login valida el token de Authorization
-func Login(gCtx *gin.Context) {
-	var resModel models.Response
+func (ah *authHandler) Login(gCtx *gin.Context) {
+	var resModel APIResponse
 	req := gCtx.Request
 
 	err := VerifyToken(req)
 
 	if err != nil {
-		resModel.Message = err.Error() + " | ¡Usuario no autorizado!"
+		resModel.Message = "usuario no autorizado"
+		resModel.Errors = []APIError{
+			{
+				Status:      http.StatusUnauthorized,
+				Title:       http.StatusText(http.StatusUnauthorized),
+				Description: err.Error(),
+			},
+		}
 
 		gCtx.JSON(http.StatusOK, resModel)
 		return
 	}
 
-	resModel.Message = "Welcome"
+	resModel.Message = "success authentication"
 	gCtx.JSON(http.StatusOK, resModel)
 }
 
@@ -65,12 +82,12 @@ func CreateToken(r *http.Request) (string, error) {
 	var hs = jwt.NewHS256([]byte("dev1986"))
 	now := time.Now()
 
-	payload := models.JwtPayload{
+	payload := JwtPayload{
 		Payload: jwt.Payload{
 			Issuer:         "devrodriguez",
 			Subject:        "dev",
 			Audience:       jwt.Audience{"http://localhost:3000"},
-			ExpirationTime: jwt.NumericDate(now.Add(300 * time.Second)),
+			ExpirationTime: jwt.NumericDate(now.Add(3000 * time.Second)),
 			NotBefore:      jwt.NumericDate(now),
 			IssuedAt:       jwt.NumericDate(now),
 			JWTID:          "foobar",
@@ -90,7 +107,7 @@ func CreateToken(r *http.Request) (string, error) {
 
 func VerifyToken(r *http.Request) error {
 	var secret = jwt.NewHS256([]byte("dev1986"))
-	var payload models.JwtPayload
+	var payload JwtPayload
 	now := time.Now()
 
 	token := []byte(r.Header.Get("Authorization"))
@@ -110,8 +127,7 @@ func VerifyToken(r *http.Request) error {
 	return nil
 }
 
-func ValidateUserAuth(user, password string) bool {
-	log.Println(user, password)
+func validateUserAuth(user, password string) bool {
 	if user == "john" && password == "12345" {
 		return true
 	}

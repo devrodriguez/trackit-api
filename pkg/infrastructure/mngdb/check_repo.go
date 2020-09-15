@@ -47,8 +47,9 @@ func (cp *CheckRepository) DBGetAll() ([]*entity.Check, error) {
 }
 
 func (cp *CheckRepository) DBCreate(c *gin.Context, chk entity.Check) error {
-	docRef := cp.cli.Database("locateme").Collection("checks")
+	// chk.Company.ID = primitive.NewObjectID()
 
+	docRef := cp.cli.Database("locateme").Collection("checks")
 	res, err := docRef.InsertOne(c, chk)
 
 	if err != nil {
