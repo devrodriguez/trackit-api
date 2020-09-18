@@ -1,49 +1,48 @@
 package server
 
 import (
-	"github.com/devrodriguez/first-class-api-go/controllers"
+	"context"
+	"time"
+
 	"github.com/devrodriguez/first-class-api-go/middlewares"
-	"github.com/devrodriguez/first-class-api-go/pkg/application"
-	"github.com/devrodriguez/first-class-api-go/pkg/infrastructure/mngdb"
-	"github.com/devrodriguez/first-class-api-go/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func New(client *mongo.Client) *gin.Engine {
-
-	// Check
-	chkRepo := mngdb.NewCheckMongoRepo(client)
-	chkSrv := application.NewCheckService(chkRepo)
-	chkHand := rest.NewCheckHandler(chkSrv)
-
-	// Company
-	compRepo := mngdb.NewCompanyMongoRepo(client)
-	compSrv := application.NewCompanyService(compRepo)
-	compHand := rest.NewCompanyHandler(compSrv)
+func New() *gin.Engine {
 
 	// New server
 	server := gin.New()
 
+	// Create db connection
+	dbcli := dbConnect()
+
+	// Serve static files
+	server.Static("/s", "./storage")
+
 	// Add middlewares
 	server.Use(gin.Recovery(), middlewares.Logger())
 
-	// Group api routes
-	apiRoutes := server.Group("/api/public")
-	{
-		apiRoutes.GET("/signin", controllers.SignIn)
-	}
-
-	// Endpoints with authentication
-	authGroup := server.Group("/api")
-	authGroup.Use(middlewares.ValidateAuth())
-	{
-		authGroup.GET("/companies", compHand.Get)
-		authGroup.GET("/checks", chkHand.GetChecks)
-		authGroup.POST("/checks", chkHand.Create)
-		authGroup.PUT("/checks/:id", chkHand.Update)
-		authGroup.GET("/login", controllers.Login)
-	}
+	// Map URLs
+	MapURLs(server, dbcli)
 
 	return server
+}
+
+func dbConnect() *mongo.Client {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(60)*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://adminUser:Chrome.2020@auditcluster-ohkrf.gcp.mongodb.net/locateme?retryWrites=true&w=majority"))
+	if err != nil {
+		panic(err)
+	}
+
+	// Check connections
+	if err := client.Ping(context.TODO(), nil); err != nil {
+		panic(err)
+	}
+
+	return client
 }
