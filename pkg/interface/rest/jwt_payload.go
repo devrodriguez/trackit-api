@@ -1,4 +1,4 @@
-package models
+package rest
 
 import (
 	"github.com/gbrlsnchs/jwt/v3"

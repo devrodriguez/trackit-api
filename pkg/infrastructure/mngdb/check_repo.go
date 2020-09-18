@@ -24,6 +24,7 @@ func NewCheckMongoRepo(cli *mongo.Client) *CheckRepository {
 
 func (cp *CheckRepository) DBGetAll() ([]*entity.Check, error) {
 	var checks []*entity.Check
+
 	findOptions := options.Find()
 	docRef := cp.cli.Database("locateme").Collection("checks")
 	cursor, err := docRef.Find(context.TODO(), bson.D{{}}, findOptions)
@@ -46,15 +47,16 @@ func (cp *CheckRepository) DBGetAll() ([]*entity.Check, error) {
 }
 
 func (cp *CheckRepository) DBCreate(c *gin.Context, chk entity.Check) error {
-	docRef := cp.cli.Database("locateme").Collection("checks")
+	// chk.Company.ID = primitive.NewObjectID()
 
+	docRef := cp.cli.Database("locateme").Collection("checks")
 	res, err := docRef.InsertOne(c, chk)
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("mongodb.DBCreate.ir: ", res.InsertedID)
+	fmt.Println("Insert ID: ", res.InsertedID)
 
 	return nil
 }
@@ -62,7 +64,6 @@ func (cp *CheckRepository) DBCreate(c *gin.Context, chk entity.Check) error {
 func (cp *CheckRepository) DBUpdate(id string, chk entity.Check) error {
 	docRef := cp.cli.Database("locateme").Collection("checks")
 	opts := options.Update().SetUpsert(true)
-
 	hid, err := primitive.ObjectIDFromHex(id)
 
 	// Check for MongoDB ID ObjectIDFromHex errors
@@ -71,13 +72,6 @@ func (cp *CheckRepository) DBUpdate(id string, chk entity.Check) error {
 	}
 
 	filter := bson.M{"_id": bson.M{"$eq": hid}}
-
-	// update := bson.M{"$set": bson.M{
-	// 	"address": chk.Address,
-	// 	"type": chk.Type,
-	// 	"latitude": chk.Latitude,
-	// 	"longitude": chk.Longitude,
-	// }}
 
 	update := bson.M{
 		"$set": chk,
@@ -90,7 +84,7 @@ func (cp *CheckRepository) DBUpdate(id string, chk entity.Check) error {
 		opts,
 	)
 
-	fmt.Println("ID: ", id, "mdofied: ", res.ModifiedCount, " matched: ", res.MatchedCount)
+	fmt.Println("ID: ", id, "modified: ", res.ModifiedCount, " matched: ", res.MatchedCount)
 
 	if err != nil {
 		return err
