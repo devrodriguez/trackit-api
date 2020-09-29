@@ -7,6 +7,7 @@ import (
 
 type CheckService interface {
 	GetAll() ([]*entity.Check, error)
+	GetBy(string, string, string) ([]*entity.Check, error)
 	Create(c *gin.Context, chk entity.Check) error
 	Update(id string, chk entity.Check) error
 }

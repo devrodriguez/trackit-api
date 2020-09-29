@@ -3,27 +3,32 @@ package rest
 import (
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/devrodriguez/first-class-api-go/pkg/domain/service"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/gin-gonic/gin"
 )
 
-type authHandler struct{}
+type authHandler struct {
+	empSrv service.EmployeeService
+}
 
-func NewAuthHandler() *authHandler {
-	return &authHandler{}
+func NewAuthHandler(empSrv service.EmployeeService) *authHandler {
+	return &authHandler{
+		empSrv,
+	}
 }
 
 func (ah *authHandler) SignIn(c *gin.Context) {
 	var resModel APIResponse
 
 	// == VALIDATE USER AND PASSWORD ==
-	// data, _ := getBodyData(gCtx)
 	user := c.Query("user")
 	password := c.Query("password")
 
-	if !validateUserAuth(user, password) {
+	if !validateUserAuth(ah, user, password) {
 		resModel.Message = "Wrong user or password"
 
 		c.JSON(http.StatusOK, resModel)
@@ -32,8 +37,6 @@ func (ah *authHandler) SignIn(c *gin.Context) {
 
 	// == CREATE JWT TOKEN ==
 	token, err := CreateToken(c.Request)
-
-	log.Println(string(token))
 
 	if err != nil {
 		resModel.Message = "Autenticacion fallida"
@@ -110,15 +113,13 @@ func VerifyToken(r *http.Request) error {
 	var payload JwtPayload
 	now := time.Now()
 
-	token := []byte(r.Header.Get("Authorization"))
+	token := extractToken(r)
 
 	expValidator := jwt.ExpirationTimeValidator(now)
 	nbfValidator := jwt.NotBeforeValidator(now)
 	validatePayload := jwt.ValidatePayload(&payload.Payload, expValidator, nbfValidator)
 
-	hd, err := jwt.Verify(token, secret, &payload, validatePayload)
-
-	log.Println(hd)
+	_, err := jwt.Verify([]byte(token), secret, &payload, validatePayload)
 
 	if err != nil {
 		return err
@@ -127,10 +128,22 @@ func VerifyToken(r *http.Request) error {
 	return nil
 }
 
-func validateUserAuth(user, password string) bool {
-	if user == "john" && password == "12345" {
-		return true
+func extractToken(r *http.Request) string {
+	token := r.Header.Get("Authorization")
+
+	if bearToken := strings.Split(token, " "); len(bearToken) == 2 {
+		return bearToken[1]
 	}
 
-	return false
+	return ""
+}
+
+func validateUserAuth(ah *authHandler, email, password string) bool {
+	valid, err := ah.empSrv.ValidateCredentials(email, password)
+
+	if err != nil {
+		return false
+	}
+
+	return valid
 }

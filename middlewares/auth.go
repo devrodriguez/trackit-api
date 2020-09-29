@@ -3,6 +3,7 @@ package middlewares
 import (
 	"net/http"
 
+	"github.com/devrodriguez/first-class-api-go/pkg/infrastructure/auth"
 	"github.com/devrodriguez/first-class-api-go/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,7 @@ func ValidateAuth() gin.HandlerFunc {
 	var resModel rest.APIResponse
 
 	return func(gCtx *gin.Context) {
-		err := rest.VerifyToken(gCtx.Request)
+		err := auth.VerifyToken(gCtx.Request)
 
 		if err != nil {
 			resModel.Message = "you need to be authorized"

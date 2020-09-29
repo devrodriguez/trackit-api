@@ -34,6 +34,38 @@ func (ch *CheckHandler) GetChecks(c *gin.Context) {
 				},
 			},
 		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, APIResponse{
+		Data: checks,
+	})
+}
+
+func (ch *CheckHandler) GetChecksBy(c *gin.Context) {
+	email := c.Query("email")
+	companyID := c.Query("company_id")
+	date := c.Query("date")
+
+	checks, err := ch.srv.GetBy(email, companyID, date)
+
+	if err != nil {
+		c.JSON(http.StatusNoContent, APIResponse{
+			Message: "not data found",
+			Errors: []APIError{
+				{
+					Title:  http.StatusText(http.StatusNoContent),
+					Status: http.StatusNoContent,
+				},
+			},
+		})
+
+		return
+	}
+
+	if checks == nil {
+		checks = []*entity.Check{}
 	}
 
 	c.JSON(http.StatusOK, APIResponse{
@@ -82,7 +114,6 @@ func (ch *CheckHandler) Update(c *gin.Context) {
 	id := c.Params.ByName("id")
 
 	if err := c.BindJSON(&check); err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Message: "error binding data",
 			Errors: []APIError{
