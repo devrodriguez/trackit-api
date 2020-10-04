@@ -20,7 +20,9 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 	empHand := rest.NewEmployeeHandler(empSrv)
 
 	// Auth
-	authHand := rest.NewAuthHandler(empSrv)
+	authRepo := mngdb.NewAuthRepository(cli)
+	authSrv := application.NewAuthService(authRepo)
+	authHand := rest.NewAuthHandler(authSrv)
 
 	// Check
 	chkRepo := mngdb.NewCheckMongoRepo(cli)
@@ -43,6 +45,11 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 	{
 		apiRoutes.GET("/signin", authHand.SignIn)
 		apiRoutes.OPTIONS("/signin", func(c *gin.Context) {
+			c.JSON(http.StatusOK, nil)
+		})
+
+		apiRoutes.POST("/register", authHand.Register)
+		apiRoutes.OPTIONS("/register", func(c *gin.Context) {
 			c.JSON(http.StatusOK, nil)
 		})
 	}
@@ -73,6 +80,5 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 		authGroup.GET("/workplans/:id", workHand.GetByID)
 		authGroup.GET("/employees/:id/workplans", workHand.GetByEmployee)
 		authGroup.POST("/employees", empHand.Create)
-		// authGroup.GET("/login", authHand.Login)
 	}
 }

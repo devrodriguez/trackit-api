@@ -15,7 +15,7 @@ type CheckHandler struct {
 
 func NewCheckHandler(srv service.CheckService) *CheckHandler {
 	return &CheckHandler{
-		srv: srv,
+		srv,
 	}
 }
 
@@ -78,7 +78,7 @@ func (ch *CheckHandler) Create(c *gin.Context) {
 
 	// Get data from request
 	if err := c.BindJSON(&check); err != nil {
-		fmt.Println(err)
+
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Message: "error binding data",
 			Errors: []APIError{

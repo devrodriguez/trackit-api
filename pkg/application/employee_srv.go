@@ -25,13 +25,3 @@ func (e *employeeService) Create(emp entity.Employee) error {
 
 	return nil
 }
-
-func (e *employeeService) ValidateCredentials(email string, pass string) (bool, error) {
-	emp, err := e.repo.ByCredentials(email, pass)
-
-	if err != nil || emp == nil {
-		return false, err
-	}
-
-	return true, nil
-}

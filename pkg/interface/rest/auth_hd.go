@@ -6,18 +6,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
 	"github.com/devrodriguez/first-class-api-go/pkg/domain/service"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/gin-gonic/gin"
 )
 
 type authHandler struct {
-	empSrv service.EmployeeService
+	srv service.AuthService
 }
 
-func NewAuthHandler(empSrv service.EmployeeService) *authHandler {
+func NewAuthHandler(srv service.AuthService) *authHandler {
 	return &authHandler{
-		empSrv,
+		srv,
 	}
 }
 
@@ -54,6 +55,41 @@ func (ah *authHandler) SignIn(c *gin.Context) {
 
 	resModel.Data = gin.H{"token": string(token)}
 	c.JSON(http.StatusOK, resModel)
+}
+
+func (ah *authHandler) Register(c *gin.Context) {
+	var user entity.User
+
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{
+			Message: "error binding data",
+			Errors: []APIError{
+				{
+					Title:  http.StatusText(http.StatusBadRequest),
+					Status: http.StatusBadRequest,
+				},
+			},
+		})
+		return
+	}
+
+	if err := ah.srv.Register(user); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{
+			Message: "error creating user",
+			Errors: []APIError{
+				{
+					Title:       http.StatusText(http.StatusBadRequest),
+					Status:      http.StatusBadRequest,
+					Description: err.Error(),
+				},
+			},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, APIResponse{
+		Message: `success`,
+	})
 }
 
 // Login valida el token de Authorization
@@ -139,7 +175,7 @@ func extractToken(r *http.Request) string {
 }
 
 func validateUserAuth(ah *authHandler, email, password string) bool {
-	valid, err := ah.empSrv.ValidateCredentials(email, password)
+	valid, err := ah.srv.ValidateCredentials(email, password)
 
 	if err != nil {
 		return false

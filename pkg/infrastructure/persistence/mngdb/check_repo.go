@@ -52,12 +52,28 @@ func (cr *checkRepository) DBGetBy(email, companyID, date string) ([]*entity.Che
 
 	findOptions := options.Find()
 	docRef := cr.cli.Database("locateme").Collection("checks")
-	filter := bson.M{
-		"email":      bson.M{"$eq": email},
-		"company_id": bson.M{"$eq": companyID},
-		"date":       bson.M{"$eq": date},
+
+	_filter := primitive.D{}
+
+	if email != "" {
+		_filter = append(_filter, primitive.E{"email", bson.M{"$eq": email}})
 	}
-	cursor, err := docRef.Find(context.TODO(), filter, findOptions)
+
+	if companyID != "" {
+		_filter = append(_filter, primitive.E{"company_id", bson.M{"$eq": companyID}})
+	}
+
+	if date != "" {
+		_filter = append(_filter, primitive.E{"date", bson.M{"$eq": date}})
+	}
+
+	// filter := bson.M{
+	// 	"email":      bson.M{"$eq": email},
+	// 	"company_id": bson.M{"$eq": companyID},
+	// 	"date":       bson.M{"$eq": date},
+	// }
+
+	cursor, err := docRef.Find(context.TODO(), _filter, findOptions)
 
 	if err != nil {
 		return nil, err

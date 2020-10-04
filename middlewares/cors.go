@@ -1,6 +1,11 @@
 package middlewares
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func EnableCORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -10,7 +15,8 @@ func EnableCORS() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS")
 
 		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+			fmt.Println("c.Request.Method: ", c.Request.Method)
+			c.AbortWithStatus(http.StatusOK)
 			return
 		}
 
