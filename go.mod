@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-rc.1
-	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.5.0
 	go.mongodb.org/mongo-driver v1.4.0
 	golang.org/x/crypto v0.0.0-20200320145329-97fc981609be // indirect

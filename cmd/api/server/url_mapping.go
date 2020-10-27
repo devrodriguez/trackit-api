@@ -39,6 +39,9 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 	workSrv := application.NewWorkplanService(workRepo)
 	workHand := rest.NewWorkplanHandler(workSrv)
 
+	// Geo
+	geoHand := rest.NewGeoHandler()
+
 	// Group api routes
 	apiRoutes := rg.Group("/api/public")
 	apiRoutes.Use(middlewares.EnableCORS())
@@ -80,5 +83,10 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 		authGroup.GET("/workplans/:id", workHand.GetByID)
 		authGroup.GET("/employees/:id/workplans", workHand.GetByEmployee)
 		authGroup.POST("/employees", empHand.Create)
+
+		authGroup.GET("/geo/address", geoHand.AddressPredictions)
+		authGroup.OPTIONS("/geo/address", func(c *gin.Context) {
+			c.JSON(http.StatusOK, nil)
+		})
 	}
 }
