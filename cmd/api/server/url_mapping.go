@@ -62,12 +62,14 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 	authGroup.Use(middlewares.EnableCORS())
 	authGroup.Use(middlewares.ValidateAuth())
 	{
+		// Companies
 		authGroup.GET("/companies", compHand.GetAll)
 		authGroup.POST("/companies", compHand.Create)
 		authGroup.OPTIONS("/companies", func(c *gin.Context) {
 			c.JSON(http.StatusOK, nil)
 		})
 
+		// Checks
 		authGroup.GET("/checks", chkHand.GetChecks)
 		authGroup.GET("/checks_by", chkHand.GetChecksBy)
 		authGroup.OPTIONS("/checks_by", func(c *gin.Context) {
@@ -79,11 +81,18 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 			c.JSON(http.StatusOK, nil)
 		})
 
+		// Workplan
 		authGroup.POST("/workplans", workHand.Create)
 		authGroup.GET("/workplans/:id", workHand.GetByID)
 		authGroup.GET("/employees/:id/workplans", workHand.GetByEmployee)
+		authGroup.OPTIONS("/employees/:id/workplans", func(c *gin.Context) {
+			c.JSON(http.StatusOK, nil)
+		})
+
+		// Employees
 		authGroup.POST("/employees", empHand.Create)
 
+		// Geo
 		authGroup.GET("/geo/address", geoHand.AddressPredictions)
 		authGroup.OPTIONS("/geo/address", func(c *gin.Context) {
 			c.JSON(http.StatusOK, nil)

@@ -75,6 +75,7 @@ func (wh *WorkplanHandler) GetByEmployee(c *gin.Context) {
 
 func (wh *WorkplanHandler) Create(c *gin.Context) {
 	var workplan entity.Workplan
+
 	if err := c.BindJSON(&workplan); err != nil {
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Errors: []APIError{
