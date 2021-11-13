@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

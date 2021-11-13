@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
-	"github.com/devrodriguez/first-class-api-go/pkg/domain/service"
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/service"
 	"github.com/gin-gonic/gin"
 )
 
 type CheckHandler struct {
-	srv service.CheckService
+	srv service.ICheckService
 }
 
-func NewCheckHandler(srv service.CheckService) *CheckHandler {
+func NewCheckHandler(srv service.ICheckService) *CheckHandler {
 	return &CheckHandler{
 		srv: srv,
 	}
@@ -21,8 +21,8 @@ func NewCheckHandler(srv service.CheckService) *CheckHandler {
 
 // Implementation
 func (ch *CheckHandler) GetChecks(c *gin.Context) {
-
-	checks, err := ch.srv.GetAll()
+	employeeID := c.Query("emp_id")
+	checks, err := ch.srv.GetByEmployee(c, employeeID)
 
 	if err != nil {
 		c.JSON(http.StatusNoContent, APIResponse{
@@ -59,7 +59,7 @@ func (ch *CheckHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err := ch.srv.Create(c, check); err != nil {
+	if err := ch.srv.Add(c, check); err != nil {
 		c.JSON(http.StatusNotModified, APIResponse{
 			Message: "error saving data",
 			Errors: []APIError{
@@ -74,42 +74,5 @@ func (ch *CheckHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, APIResponse{
 		Message: `success`,
-	})
-}
-
-func (ch *CheckHandler) Update(c *gin.Context) {
-	var check entity.Check
-	id := c.Params.ByName("id")
-
-	if err := c.BindJSON(&check); err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, APIResponse{
-			Message: "error binding data",
-			Errors: []APIError{
-				{
-					Title:  http.StatusText(http.StatusBadRequest),
-					Status: http.StatusBadRequest,
-				},
-			},
-		})
-		return
-	}
-
-	if err := ch.srv.Update(id, check); err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusNotModified, APIResponse{
-			Message: "error updating data",
-			Errors: []APIError{
-				{
-					Title:  http.StatusText(http.StatusNotModified),
-					Status: http.StatusNotModified,
-				},
-			},
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, APIResponse{
-		Message: "check updated",
 	})
 }

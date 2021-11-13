@@ -1,27 +1,27 @@
 package server
 
 import (
-	"github.com/devrodriguez/first-class-api-go/middlewares"
-	"github.com/devrodriguez/first-class-api-go/pkg/application"
-	"github.com/devrodriguez/first-class-api-go/pkg/infrastructure/mngdb"
-	"github.com/devrodriguez/first-class-api-go/pkg/interface/rest"
+	"github.com/devrodriguez/trackit-go-api/middlewares"
+	"github.com/devrodriguez/trackit-go-api/pkg/application"
+	"github.com/devrodriguez/trackit-go-api/pkg/infrastructure/db/mysqldb"
+	"github.com/devrodriguez/trackit-go-api/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func MapURLs(rg *gin.Engine, cli *mongo.Client) {
+func MapURLs(rg *gin.Engine, depend Dependencies) {
 	// Auth
 	authHand := rest.NewAuthHandler()
 
 	// Check
-	chkRepo := mngdb.NewCheckMongoRepo(cli)
+	chkRepo := mysqldb.NewCheckAdapter(depend.sqlDB)
 	chkSrv := application.NewCheckService(chkRepo)
 	chkHand := rest.NewCheckHandler(chkSrv)
 
 	// Company
-	compRepo := mngdb.NewCompanyMongoRepo(cli)
+	compRepo := mysqldb.NewCompaniesAdapter(depend.sqlDB)
 	compSrv := application.NewCompanyService(compRepo)
 	compHand := rest.NewCompanyHandler(compSrv)
+
 	// Group api routes
 	apiRoutes := rg.Group("/api/public")
 	{
@@ -36,7 +36,6 @@ func MapURLs(rg *gin.Engine, cli *mongo.Client) {
 		authGroup.POST("/companies", compHand.Create)
 		authGroup.GET("/checks", chkHand.GetChecks)
 		authGroup.POST("/checks", chkHand.Create)
-		authGroup.PUT("/checks/:id", chkHand.Update)
 		// authGroup.GET("/login", authHand.Login)
 	}
 }

@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/devrodriguez/first-class-api-go/pkg/interface/rest"
+	"github.com/devrodriguez/trackit-go-api/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
 )
 

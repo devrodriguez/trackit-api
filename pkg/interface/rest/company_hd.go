@@ -3,8 +3,8 @@ package rest
 import (
 	"net/http"
 
-	"github.com/devrodriguez/first-class-api-go/pkg/application"
-	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
+	"github.com/devrodriguez/trackit-go-api/pkg/application"
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,12 +1,11 @@
 package service
 
 import (
-	"github.com/devrodriguez/first-class-api-go/pkg/domain/entity"
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/gin-gonic/gin"
 )
 
-type CheckService interface {
-	GetAll() ([]*entity.Check, error)
-	Create(c *gin.Context, chk entity.Check) error
-	Update(id string, chk entity.Check) error
+type ICheckService interface {
+	Add(c *gin.Context, chk entity.Check) error
+	GetByEmployee(c *gin.Context, employeeID string) ([]entity.Check, error)
 }

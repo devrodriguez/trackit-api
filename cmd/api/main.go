@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/devrodriguez/first-class-api-go/cmd/api/server"
+	"github.com/devrodriguez/trackit-go-api/cmd/api/server"
 	"github.com/gin-gonic/gin"
 )
 
