@@ -5,6 +5,19 @@ import (
 )
 
 type Check struct {
+	ID int `json:"id,omitempty""`
+	Name string `json:"name""`
+	Address string `json:"address""`
+	Date string `json:"date""`
+	Hour string `json:"hour""`
+	Latitude float32 `json:"latitude""`
+	Longitude float32 `json:"longitude""`
+	CompanyID int `json:"company_id""`
+	EmployeeID int `json:"employee_id""`
+	CheckTypeID int `json:"check_type_id""`
+}
+
+type CheckDB struct {
 	MgID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Address   string             `bson:"address" json:"address,omitempty" binding:"required"`
 	Company   string             `bson:"company" json:"company,omitempty" binding:"required"`

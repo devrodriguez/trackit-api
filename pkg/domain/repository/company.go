@@ -13,7 +13,7 @@ type CompanyRepository interface {
 type ICompanies interface {
 	Get(id string) (entity.Company, error)
 	GetAll() ([]entity.Company, error)
-	Create() error
+	Create(company entity.Company) error
 }
 
 type Companies struct {

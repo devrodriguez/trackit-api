@@ -1,14 +1,13 @@
 package server
 
 import (
-	"database/sql"
-	"github.com/go-sql-driver/mysql"
-	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 )
 
 type Dependencies struct {
-	sqlDB *sql.DB
+	sqlDB *gorm.DB
 }
 
 func BuildDependencies() Dependencies {
@@ -19,23 +18,12 @@ func BuildDependencies() Dependencies {
 	}
 }
 
-func buildMySQLConn() *sql.DB {
+func buildMySQLConn() *gorm.DB {
 	// Build SQL Connection
-	conf := mysql.Config{
-		User:   "root",
-		Passwd: "",
-		Net:    "tcp",
-		Addr:   "127.0.0.1:3306",
-		DBName: "checkit",
-	}
-	db, err := sql.Open("mysql", conf.FormatDSN())
+	dsn := "root:@tcp(127.0.0.1:3306)/checkit?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
-	}
-
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatalln(pingErr)
 	}
 
 	return db

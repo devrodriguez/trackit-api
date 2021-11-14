@@ -1,24 +1,24 @@
 package mysqldb
 
 import (
-	"database/sql"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/repository"
+	"gorm.io/gorm"
 )
 
 type ChecksAdapter struct {
-	dbConn *sql.DB
+	dbConn *gorm.DB
 }
 
 func (c *ChecksAdapter) Create(check entity.Check) error {
-	_, err := c.dbConn.Exec("insert into checks (name, employee_id, company_id) values(?, ?, ?)", "")
-	if err != nil {
-		return err
+	tx := c.dbConn.Create(&check)
+	if tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
 }
 
-func NewCheckAdapter(dbConn *sql.DB) repository.IChecks {
+func NewCheckAdapter(dbConn *gorm.DB) repository.IChecks {
 	return &ChecksAdapter{dbConn}
 }

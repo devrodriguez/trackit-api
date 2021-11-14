@@ -128,7 +128,7 @@ func VerifyToken(r *http.Request) error {
 }
 
 func validateUserAuth(user, password string) bool {
-	if user == "john" && password == "12345" {
+	if user == "john@email.com" && password == "12345" {
 		return true
 	}
 

@@ -19,7 +19,7 @@ func NewCheckHandler(srv service.ICheckService) *CheckHandler {
 	}
 }
 
-// Implementation
+// GetChecks ..
 func (ch *CheckHandler) GetChecks(c *gin.Context) {
 	employeeID := c.Query("emp_id")
 	checks, err := ch.srv.GetByEmployee(c, employeeID)
