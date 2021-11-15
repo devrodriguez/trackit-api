@@ -1,8 +1,9 @@
 package entity
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import "gorm.io/gorm"
 
 type Company struct {
-	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Name string             `bsdon:"name" json:"name"`
+	gorm.Model
+	ID   uint   `json:"id,omitempty"`
+	Name string `json:"name,omitempty""`
 }

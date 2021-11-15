@@ -1,4 +1,4 @@
-package rest
+package handlers
 
 type APIResponse struct {
 	Data    interface{} `json:"data,omitempty"`

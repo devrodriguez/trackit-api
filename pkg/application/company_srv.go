@@ -16,7 +16,7 @@ func NewCompanyService(repo repository.ICompanies) *CompanyService {
 	}
 }
 
-// Implementation
+// GetAll ..
 func (cs *CompanyService) GetAll() ([]entity.Company, error) {
 	companies, err := cs.repo.GetAll()
 	if err != nil {
@@ -27,7 +27,7 @@ func (cs *CompanyService) GetAll() ([]entity.Company, error) {
 }
 
 func (cs *CompanyService) Create(c *gin.Context, company entity.Company) error {
-	err := cs.repo.Create()
+	err := cs.repo.Create(company)
 
 	if err != nil {
 		return err

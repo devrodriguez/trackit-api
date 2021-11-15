@@ -2,19 +2,21 @@ package entity
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gorm.io/gorm"
 )
 
 type Check struct {
-	ID int `json:"id,omitempty""`
-	Name string `json:"name""`
-	Address string `json:"address""`
-	Date string `json:"date""`
-	Hour string `json:"hour""`
-	Latitude float32 `json:"latitude""`
-	Longitude float32 `json:"longitude""`
-	CompanyID int `json:"company_id""`
-	EmployeeID int `json:"employee_id""`
-	CheckTypeID int `json:"check_type_id""`
+	gorm.Model
+	ID          uint    `json:"id,omitempty"`
+	Name        string  `json:"name"`
+	Address     string  `json:"address"`
+	Date        string  `json:"date"`
+	Hour        string  `json:"hour"`
+	Latitude    float32 `json:"latitude"`
+	Longitude   float32 `json:"longitude"`
+	CompanyID   uint    `json:"company_id"`
+	EmployeeID  uint    `json:"employee_id"`
+	CheckTypeID uint    `json:"check_type_id"`
 }
 
 type CheckDB struct {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -26,5 +27,14 @@ func buildMySQLConn() *gorm.DB {
 		log.Fatalln(err)
 	}
 
+	runMigrations(db)
+
 	return db
+}
+
+func runMigrations(db *gorm.DB) {
+	db.AutoMigrate(&entity.Company{})
+	db.AutoMigrate(&entity.Check{})
+	db.AutoMigrate(&entity.Employee{})
+
 }

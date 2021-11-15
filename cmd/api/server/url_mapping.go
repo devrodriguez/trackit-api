@@ -1,26 +1,31 @@
 package server
 
 import (
-	"github.com/devrodriguez/trackit-go-api/middlewares"
+	"github.com/devrodriguez/trackit-go-api/cmd/api/server/handlers"
+	"github.com/devrodriguez/trackit-go-api/cmd/api/server/middlewares"
 	"github.com/devrodriguez/trackit-go-api/pkg/application"
 	"github.com/devrodriguez/trackit-go-api/pkg/infrastructure/db/mysqldb"
-	"github.com/devrodriguez/trackit-go-api/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
 )
 
 func MapURLs(rg *gin.Engine, depend Dependencies) {
 	// Auth
-	authHand := rest.NewAuthHandler()
+	authHand := handlers.NewAuthHandler()
 
 	// Check
 	chkRepo := mysqldb.NewCheckAdapter(depend.sqlDB)
 	chkSrv := application.NewCheckService(chkRepo)
-	chkHand := rest.NewCheckHandler(chkSrv)
+	chkHand := handlers.NewCheckHandler(chkSrv)
 
 	// Company
 	compRepo := mysqldb.NewCompaniesAdapter(depend.sqlDB)
 	compSrv := application.NewCompanyService(compRepo)
-	compHand := rest.NewCompanyHandler(compSrv)
+	compHand := handlers.NewCompanyHandler(compSrv)
+
+	// Employee
+	empRepo := mysqldb.NewEmployeeAdapter(depend.sqlDB)
+	empSrv := application.NewEmployeeSrv(empRepo)
+	empHand := handlers.NewEmployeeHandler(empSrv)
 
 	// Group api routes
 	apiRoutes := rg.Group("/api/public")
@@ -36,6 +41,7 @@ func MapURLs(rg *gin.Engine, depend Dependencies) {
 		authGroup.POST("/companies", compHand.Create)
 		authGroup.GET("/checks", chkHand.GetChecks)
 		authGroup.POST("/checks", chkHand.Create)
+		authGroup.POST("/employees", empHand.Create)
 		// authGroup.GET("/login", authHand.Login)
 	}
 }

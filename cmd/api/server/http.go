@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/devrodriguez/trackit-go-api/middlewares"
+	"github.com/devrodriguez/trackit-go-api/cmd/api/server/middlewares"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,4 +1,4 @@
-package interfaces
+package handlers
 
 // === DEPRECATED === //
 type IAuth interface {

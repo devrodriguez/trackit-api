@@ -1,4 +1,4 @@
-package rest
+package handlers
 
 type APIError struct {
 	Title       string `json:"title"`
