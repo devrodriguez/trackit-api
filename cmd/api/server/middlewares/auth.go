@@ -1,21 +1,21 @@
 package middlewares
 
 import (
+	"github.com/devrodriguez/trackit-go-api/cmd/api/server/handlers"
 	"net/http"
 
-	"github.com/devrodriguez/trackit-go-api/pkg/interface/rest"
 	"github.com/gin-gonic/gin"
 )
 
 func ValidateAuth() gin.HandlerFunc {
-	var resModel rest.APIResponse
+	var resModel handlers.APIResponse
 
 	return func(gCtx *gin.Context) {
-		err := rest.VerifyToken(gCtx.Request)
+		err := handlers.VerifyToken(gCtx.Request)
 
 		if err != nil {
 			resModel.Message = "you need to be authorized"
-			resModel.Errors = []rest.APIError{
+			resModel.Errors = []handlers.APIError{
 				{
 					Status:      http.StatusUnauthorized,
 					Title:       http.StatusText(http.StatusUnauthorized),
