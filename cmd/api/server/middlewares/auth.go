@@ -10,8 +10,9 @@ import (
 func ValidateAuth() gin.HandlerFunc {
 	var resModel handlers.APIResponse
 
-	return func(gCtx *gin.Context) {
-		err := handlers.VerifyToken(gCtx.Request)
+	return func(c *gin.Context) {
+		return
+		err := handlers.VerifyToken(c.Request)
 
 		if err != nil {
 			resModel.Message = "you need to be authorized"
@@ -23,11 +24,11 @@ func ValidateAuth() gin.HandlerFunc {
 				},
 			}
 
-			gCtx.JSON(http.StatusUnauthorized, resModel)
-			gCtx.Abort()
+			c.JSON(http.StatusUnauthorized, resModel)
+			c.Abort()
 			return
 		}
 
-		gCtx.Next()
+		c.Next()
 	}
 }

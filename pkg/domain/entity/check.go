@@ -1,14 +1,13 @@
 package entity
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 )
 
 type Check struct {
 	gorm.Model
 	ID          uint    `json:"id,omitempty"`
-	Name        string  `json:"name"`
+	Description string  `json:"name"`
 	Address     string  `json:"address"`
 	Date        string  `json:"date"`
 	Hour        string  `json:"hour"`
@@ -19,14 +18,21 @@ type Check struct {
 	CheckTypeID uint    `json:"check_type_id"`
 }
 
-type CheckDB struct {
-	MgID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Address   string             `bson:"address" json:"address,omitempty" binding:"required"`
-	Company   string             `bson:"company" json:"company,omitempty" binding:"required"`
-	Date      string             `bson:"date" json:"date,omitempty" binding:"required"`
-	Email     string             `bson:"email" json:"email,omitempty" binding:"required,email"`
-	Hour      string             `bson:"hour" json:"hour,omitempty" binding:"required"`
-	Latitude  float32            `bson:"latitude" json:"latitude,omitempty" binding:"required"`
-	Longitude float32            `bson:"longitude" json:"longitude,omitempty" binding:"required"`
-	Type      string             `bson:"type" json:"type,omitempty" binding:"required"`
+type CheckType struct {
+	gorm.Model
+	ID   uint   `json:"id,omitempty"`
+	Name string `json:"name"`
+}
+
+type CheckQuery struct {
+	CheckID       uint   `gorm:"column:check_id" json:"check_id"`
+	CompanyID     uint   `gorm:"column:company_id" json:"company_id"`
+	CompanyName   string `gorm:"column:company_name" json:"company_name"`
+	EmployeeID    uint   `gorm:"column:employee_id" json:"employee_id"`
+	EmployeeName  string `gorm:"column:employee_name" json:"employee_name"`
+	CheckTypeID   uint   `gorm:"column:check_type_id" json:"check_type_id"`
+	CheckTypeName string `gorm:"column:check_type_name" json:"check_type_name"`
+	Date          string `json:"date"`
+	Hour          string `json:"hour"`
+	Description   string `json:"description"`
 }

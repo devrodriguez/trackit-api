@@ -7,5 +7,5 @@ import (
 
 type ICheckService interface {
 	Add(c *gin.Context, chk entity.Check) error
-	GetByEmployee(c *gin.Context, employeeID string) ([]entity.Check, error)
+	ByEmployee(employee entity.Employee) (checks []entity.CheckQuery, err error)
 }

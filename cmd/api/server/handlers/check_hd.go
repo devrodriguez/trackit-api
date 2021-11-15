@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/service"
@@ -21,8 +22,17 @@ func NewCheckHandler(srv service.ICheckService) *CheckHandler {
 
 // GetChecks ..
 func (ch *CheckHandler) GetChecks(c *gin.Context) {
-	employeeID := c.Query("emp_id")
-	checks, err := ch.srv.GetByEmployee(c, employeeID)
+	employeeID := c.Param("emp_id")
+
+	id, err := strconv.Atoi(employeeID)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	checks, err := ch.srv.ByEmployee(entity.Employee{
+		ID: uint(id),
+	})
 
 	if err != nil {
 		c.JSON(http.StatusNoContent, APIResponse{

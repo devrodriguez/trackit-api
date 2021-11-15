@@ -33,6 +33,7 @@ func buildMySQLConn() *gorm.DB {
 }
 
 func runMigrations(db *gorm.DB) {
+	db.AutoMigrate(&entity.CheckType{})
 	db.AutoMigrate(&entity.Company{})
 	db.AutoMigrate(&entity.Check{})
 	db.AutoMigrate(&entity.Employee{})

@@ -13,6 +13,7 @@ type CheckRepository interface {
 
 type IChecks interface {
 	Create(check entity.Check) error
+	QueryByEmployee(employee entity.Employee) ([]entity.CheckQuery, error)
 }
 
 type Check struct {
