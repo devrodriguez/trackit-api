@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CheckRepository interface {
+type ICheckRepository interface {
 	DBGetAll() ([]*entity.Check, error)
 	DBCreate(*gin.Context, entity.Check) error
 	DBUpdate(string, entity.Check) error

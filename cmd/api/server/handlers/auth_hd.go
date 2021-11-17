@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/devrodriguez/trackit-go-api/pkg/domain/repository"
 	"log"
 	"net/http"
 	"time"
@@ -9,10 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type authHandler struct{}
+type JwtPayload struct {
+	jwt.Payload
+}
 
-func NewAuthHandler() *authHandler {
-	return &authHandler{}
+type authHandler struct {
+	repo repository.IUserRepository
+}
+
+func NewAuthHandler(repo repository.IUserRepository) *authHandler {
+	return &authHandler{
+		repo,
+	}
 }
 
 func (ah *authHandler) SignIn(c *gin.Context) {
@@ -23,7 +32,7 @@ func (ah *authHandler) SignIn(c *gin.Context) {
 	user := c.Query("user")
 	password := c.Query("password")
 
-	if !validateUserAuth(user, password) {
+	if !ah.validateUserAuth(user, password) {
 		resModel.Message = "Wrong user or password"
 
 		c.JSON(http.StatusOK, resModel)
@@ -33,10 +42,10 @@ func (ah *authHandler) SignIn(c *gin.Context) {
 	// == CREATE JWT TOKEN ==
 	token, err := CreateToken(c.Request)
 
-	log.Println(string(token))
+	log.Println(token)
 
 	if err != nil {
-		resModel.Message = "Autenticacion fallida"
+		resModel.Message = "authentication failed"
 		resModel.Errors = []APIError{
 			{
 				Status:      http.StatusUnauthorized,
@@ -61,7 +70,7 @@ func (ah *authHandler) Login(gCtx *gin.Context) {
 	err := VerifyToken(req)
 
 	if err != nil {
-		resModel.Message = "usuario no autorizado"
+		resModel.Message = "user not authorized"
 		resModel.Errors = []APIError{
 			{
 				Status:      http.StatusUnauthorized,
@@ -87,7 +96,7 @@ func CreateToken(r *http.Request) (string, error) {
 			Issuer:         "devrodriguez",
 			Subject:        "dev",
 			Audience:       jwt.Audience{"http://localhost:3000"},
-			ExpirationTime: jwt.NumericDate(now.Add(3000 * time.Second)),
+			ExpirationTime: jwt.NumericDate(now.Add(10 * time.Second)),
 			NotBefore:      jwt.NumericDate(now),
 			IssuedAt:       jwt.NumericDate(now),
 			JWTID:          "foobar",
@@ -127,10 +136,11 @@ func VerifyToken(r *http.Request) error {
 	return nil
 }
 
-func validateUserAuth(user, password string) bool {
-	if user == "john@email.com" && password == "12345" {
-		return true
+func (ah *authHandler) validateUserAuth(user, password string) bool {
+
+	if err := ah.repo.Check(user, password); err != nil {
+		return false
 	}
 
-	return false
+	return true
 }
