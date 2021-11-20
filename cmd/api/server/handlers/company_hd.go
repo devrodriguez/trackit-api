@@ -9,10 +9,10 @@ import (
 )
 
 type CompanyHandler struct {
-	srv *application.CompanyService
+	srv *application.CompanySrv
 }
 
-func NewCompanyHandler(srv *application.CompanyService) *CompanyHandler {
+func NewCompanyHandler(srv *application.CompanySrv) *CompanyHandler {
 	return &CompanyHandler{
 		srv,
 	}

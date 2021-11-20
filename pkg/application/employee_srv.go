@@ -7,17 +7,17 @@ import (
 )
 
 type EmployeeSrv struct {
-	repo repository.IEmployee
+	repo repository.IEmployeeRepository
 }
 
-func NewEmployeeSrv(repo repository.IEmployee) service.IEmployee {
+func NewEmployeeSrv(repo repository.IEmployeeRepository) service.IEmployee {
 	return &EmployeeSrv{
 		repo,
 	}
 }
 
 func (e *EmployeeSrv) Add(employee entity.Employee) error {
-	err := e.repo.Create(employee)
+	err := e.repo.Insert(employee)
 	if err != nil {
 		return err
 	}

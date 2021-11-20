@@ -37,5 +37,5 @@ func runMigrations(db *gorm.DB) {
 	db.AutoMigrate(&entity.Company{})
 	db.AutoMigrate(&entity.Check{})
 	db.AutoMigrate(&entity.Employee{})
-
+	db.AutoMigrate(&entity.User{})
 }

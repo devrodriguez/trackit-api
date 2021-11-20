@@ -9,8 +9,6 @@ import (
 )
 
 func MapURLs(rg *gin.Engine, depend Dependencies) {
-	// Auth
-	authHand := handlers.NewAuthHandler()
 
 	// Check
 	chkRepo := mysqldb.NewCheckAdapter(depend.sqlDB)
@@ -27,6 +25,14 @@ func MapURLs(rg *gin.Engine, depend Dependencies) {
 	empSrv := application.NewEmployeeSrv(empRepo)
 	empHand := handlers.NewEmployeeHandler(empSrv)
 
+	// User
+	usrRepo := mysqldb.NewUserAdapter(depend.sqlDB)
+	usrSrv := application.NewUserSrv(usrRepo)
+	usrHand := handlers.NewUserHandler(usrSrv)
+
+	// Auth
+	authHand := handlers.NewAuthHandler(usrRepo)
+
 	// Group api routes
 	apiRoutes := rg.Group("/api/public")
 	{
@@ -39,9 +45,10 @@ func MapURLs(rg *gin.Engine, depend Dependencies) {
 	{
 		authGroup.GET("/companies", compHand.GetAll)
 		authGroup.POST("/companies", compHand.Create)
-		authGroup.GET("/checks/employees/:emp_id", chkHand.GetChecks)
+		authGroup.GET("/employees/:emp_id/checks", chkHand.GetChecks)
 		authGroup.POST("/checks", chkHand.Create)
 		authGroup.POST("/employees", empHand.Create)
-		// authGroup.GET("/login", authHand.Login)
+		authGroup.POST("/users", usrHand.Create)
+		authGroup.GET("/login", authHand.Login)
 	}
 }

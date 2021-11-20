@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CompanyRepository interface {
+type ICompanyRepository interface {
 	DBGetAll() ([]*entity.Company, error)
 	DBCreate(*gin.Context, entity.Company) error
 }
