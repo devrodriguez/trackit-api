@@ -1,9 +1,9 @@
 package mysqldb
 
 import (
-	"errors"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/repository"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -27,17 +27,18 @@ func (u *UserAdapter) Insert(user entity.User) error {
 }
 
 func (u *UserAdapter) Check(email string, password string) error {
-	var count int64
+	var user entity.User
+
 	tx := u.dbConn.Table("users").
-		Where("email = ? and password = ?", email, password).
-		Count(&count)
+		Where("email = ?", email).
+		First(&user)
 
 	if tx.Error != nil {
 		return tx.Error
 	}
 
-	if count == 0 {
-		return errors.New("not found")
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return err
 	}
 
 	return nil

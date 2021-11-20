@@ -45,7 +45,7 @@ func MapURLs(rg *gin.Engine, depend Dependencies) {
 	{
 		authGroup.GET("/companies", compHand.GetAll)
 		authGroup.POST("/companies", compHand.Create)
-		authGroup.GET("/checks/employees/:emp_id", chkHand.GetChecks)
+		authGroup.GET("/employees/:emp_id/checks", chkHand.GetChecks)
 		authGroup.POST("/checks", chkHand.Create)
 		authGroup.POST("/employees", empHand.Create)
 		authGroup.POST("/users", usrHand.Create)

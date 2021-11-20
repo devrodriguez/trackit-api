@@ -11,7 +11,6 @@ func ValidateAuth() gin.HandlerFunc {
 	var resModel handlers.APIResponse
 
 	return func(c *gin.Context) {
-		return
 		err := handlers.VerifyToken(c.Request)
 
 		if err != nil {

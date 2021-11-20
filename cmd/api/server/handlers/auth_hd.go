@@ -4,6 +4,7 @@ import (
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/repository"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gbrlsnchs/jwt/v3"
@@ -96,7 +97,7 @@ func CreateToken(r *http.Request) (string, error) {
 			Issuer:         "devrodriguez",
 			Subject:        "dev",
 			Audience:       jwt.Audience{"http://localhost:3000"},
-			ExpirationTime: jwt.NumericDate(now.Add(10 * time.Second)),
+			ExpirationTime: jwt.NumericDate(now.Add(10 * time.Minute)),
 			NotBefore:      jwt.NumericDate(now),
 			IssuedAt:       jwt.NumericDate(now),
 			JWTID:          "foobar",
@@ -119,7 +120,8 @@ func VerifyToken(r *http.Request) error {
 	var payload JwtPayload
 	now := time.Now()
 
-	token := []byte(r.Header.Get("Authorization"))
+	authToken := strings.Split(r.Header.Get("Authorization"), "Bearer ")[1]
+	token := []byte(authToken)
 
 	expValidator := jwt.ExpirationTimeValidator(now)
 	nbfValidator := jwt.NotBeforeValidator(now)
@@ -127,7 +129,7 @@ func VerifyToken(r *http.Request) error {
 
 	hd, err := jwt.Verify(token, secret, &payload, validatePayload)
 
-	log.Println(hd)
+	log.Println(hd, err)
 
 	if err != nil {
 		return err
