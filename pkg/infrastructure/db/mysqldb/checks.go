@@ -32,7 +32,7 @@ func (c *ChecksAdapter) QueryByEmployee(employee entity.Employee) ([]entity.Chec
 		Joins("inner join check_types on checks.check_type_id = check_types.id").
 		Joins("inner join employees on checks.employee_id = employees.id").
 		Joins("inner join companies on checks.company_id = companies.id").
-		Where("employee_id = ?", employee.ID).
+		Where("checks.employee_id = ?", employee.ID).
 		Rows()
 
 	if err != nil {
