@@ -15,6 +15,7 @@ func New() *gin.Engine {
 
 	// Add middlewares
 	server.Use(gin.Recovery(), middlewares.Logger())
+	// server.Use(middlewares.CacheControl())
 
 	// Build dependencies
 	depend := BuildDependencies()

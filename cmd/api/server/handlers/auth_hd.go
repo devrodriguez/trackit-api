@@ -34,9 +34,9 @@ func (ah *authHandler) SignIn(c *gin.Context) {
 	password := c.Query("password")
 
 	if !ah.validateUserAuth(user, password) {
-		resModel.Message = "Wrong user or password"
+		resModel.Message = "wrong user or password"
 
-		c.JSON(http.StatusOK, resModel)
+		c.JSON(http.StatusUnauthorized, resModel)
 		return
 	}
 

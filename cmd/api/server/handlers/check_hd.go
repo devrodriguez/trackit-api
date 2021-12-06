@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/entity"
 	"github.com/devrodriguez/trackit-go-api/pkg/domain/service"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
 )
 
 type CheckHandler struct {
@@ -21,18 +20,28 @@ func NewCheckHandler(srv service.ICheckService) *CheckHandler {
 }
 
 // GetChecks ..
-func (ch *CheckHandler) GetChecks(c *gin.Context) {
-	employeeID := c.Param("emp_id")
+func (ch *CheckHandler) GetEmployeeChecked(c *gin.Context) {
+	employee := c.Param("emp_id")
+	company := c.Query("company")
+	fromDate := c.Query("date")
 
-	id, err := strconv.Atoi(employeeID)
+	companyID, err := strconv.ParseUint(company, 10, 32)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
-	checks, err := ch.srv.ByEmployee(entity.Employee{
-		ID: uint(id),
-	})
+	employeeID, err := strconv.Atoi(employee)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	checks, err := ch.srv.CheckedByEmployee(entity.Employee{
+		ID: uint(employeeID),
+	}, entity.Company{
+		ID: uint(companyID),
+	}, fromDate)
 
 	if err != nil {
 		c.JSON(http.StatusNoContent, APIResponse{
@@ -44,6 +53,27 @@ func (ch *CheckHandler) GetChecks(c *gin.Context) {
 				},
 			},
 		})
+	}
+
+	c.JSON(http.StatusOK, APIResponse{
+		Data: checks,
+	})
+}
+
+func (ch *CheckHandler) GetEmployeeChecks(c *gin.Context) {
+	employee := c.Param("emp_id")
+	employeeID, err := strconv.Atoi(employee)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	checks, err := ch.srv.ChecksByEmployee(entity.Employee{
+		ID: uint(employeeID),
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
 	}
 
 	c.JSON(http.StatusOK, APIResponse{

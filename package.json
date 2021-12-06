@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "rundev": "go run ./cmd/api/main.go"
+    "startdev": "go run ./cmd/api/main.go"
   }
 }

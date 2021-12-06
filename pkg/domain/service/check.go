@@ -7,5 +7,6 @@ import (
 
 type ICheckService interface {
 	Add(c *gin.Context, chk entity.Check) error
-	ByEmployee(employee entity.Employee) (checks []entity.CheckQuery, err error)
+	CheckedByEmployee(employee entity.Employee, company entity.Company, date string) (checks []entity.CheckQuery, err error)
+	ChecksByEmployee(employee entity.Employee) (checks []entity.CheckQuery, err error)
 }

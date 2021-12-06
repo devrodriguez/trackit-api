@@ -25,8 +25,17 @@ func (cs *CheckSrv) Add(c *gin.Context, chk entity.Check) error {
 	return nil
 }
 
-func (cs *CheckSrv) ByEmployee(employee entity.Employee) (checks []entity.CheckQuery, err error) {
-	checks, err = cs.repo.QueryByEmployee(employee)
+func (cs *CheckSrv) CheckedByEmployee(employee entity.Employee, company entity.Company, date string) (checks []entity.CheckQuery, err error) {
+	checks, err = cs.repo.QueryCheckedEmployee(employee,  company, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return checks, nil
+}
+
+func (cs *CheckSrv) ChecksByEmployee(employee entity.Employee) (checks []entity.CheckQuery, err error) {
+	checks, err = cs.repo.QueryChecksEmployee(employee)
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,8 @@ type ICheckRepository interface {
 
 type IChecks interface {
 	Create(check entity.Check) error
-	QueryByEmployee(employee entity.Employee) ([]entity.CheckQuery, error)
+	QueryCheckedEmployee(employee entity.Employee, company entity.Company, date string) ([]entity.CheckQuery, error)
+	QueryChecksEmployee(employee entity.Employee) ([]entity.CheckQuery, error)
 }
 
 type Check struct {

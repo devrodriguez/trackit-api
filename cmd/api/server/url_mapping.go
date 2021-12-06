@@ -47,8 +47,11 @@ func MapURLs(rg *gin.Engine, depend Dependencies) {
 	authGroup.Use(middlewares.EnableCORS(), middlewares.ValidateAuth())
 	{
 		authGroup.GET("/companies", compHand.GetAll)
+		authGroup.OPTIONS("/companies", func(c *gin.Context) { c.JSON(http.StatusOK, nil)	})
 		authGroup.POST("/companies", compHand.Create)
-		authGroup.GET("/employees/:emp_id/checks", chkHand.GetChecks)
+		authGroup.GET("/employees/:emp_id/checked", chkHand.GetEmployeeChecked)
+		authGroup.OPTIONS("/employees/:emp_id/checked", func(c *gin.Context) { c.JSON(http.StatusOK, nil)	})
+		authGroup.GET("/employees/:emp_id/checks", chkHand.GetEmployeeChecks)
 		authGroup.OPTIONS("/employees/:emp_id/checks", func(c *gin.Context) { c.JSON(http.StatusOK, nil)	})
 		authGroup.POST("/checks", chkHand.Create)
 		authGroup.POST("/employees", empHand.Create)
